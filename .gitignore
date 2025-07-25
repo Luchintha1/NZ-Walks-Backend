@@ -1,0 +1,29 @@
+﻿# Build outputs
+bin/
+obj/
+out/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+
+# Logs
+*.log
+Logs/
+
+# Environment and secrets
+.env
+secrets.json
+*.pfx
+
+# EF Core migration artifacts (optional to ignore)
+Migrations/*Snapshot.cs
+Migrations/*Designer.cs
+
+# Publish outputs
+publish/
+
+# OS generated
+Thumbs.db
+.DS_Store
