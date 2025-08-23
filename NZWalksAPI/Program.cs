@@ -15,6 +15,8 @@ builder.Services.AddDbContext<NZWalkDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksConnectionString")));
 
 builder.Services.AddScoped<IRegionRepositary, SQLRegionRepositary>();
+builder.Services.AddScoped<IWalkRepositary, SQLWalkRepositary>();
+
 
 var app = builder.Build();
 
