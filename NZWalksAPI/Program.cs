@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using NZWalks.API.Repositaries;
 using NZWalksAPI.Data; // Change the path if an error occurs
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<NZWalkDbContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalksConnectionString")));
+
+builder.Services.AddScoped<IRegionRepositary, SQLRegionRepositary>();
 
 var app = builder.Build();
 
