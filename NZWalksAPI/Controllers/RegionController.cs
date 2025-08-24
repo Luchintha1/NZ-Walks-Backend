@@ -82,28 +82,36 @@ namespace NZWalks.API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AddRegionRequestDTO addRegionRequestDTO)
         {
-            // Map or Convert DTO in to Domain Model
-            var regionDomainModel = new Region
+            if (ModelState.IsValid)
             {
-                code = addRegionRequestDTO.code,
-                Name = addRegionRequestDTO.Name,
-                RegionImageUrl = addRegionRequestDTO.RegionImageUrl
-            };
+                // Map or Convert DTO in to Domain Model
+                var regionDomainModel = new Region
+                {
+                    code = addRegionRequestDTO.code,
+                    Name = addRegionRequestDTO.Name,
+                    RegionImageUrl = addRegionRequestDTO.RegionImageUrl
+                };
 
-            // Use domain model to create a region
-            regionDomainModel = await regionRepositary.CreateAsync(regionDomainModel);
+                // Use domain model to create a region
+                regionDomainModel = await regionRepositary.CreateAsync(regionDomainModel);
 
-            // Map domain model back to DTO
+                // Map domain model back to DTO
 
-            var regionDTO = new RegionDTO
+                var regionDTO = new RegionDTO
+                {
+                    id = regionDomainModel.id,
+                    code = regionDomainModel.code,
+                    Name = regionDomainModel.Name,
+                    RegionImageUrl = regionDomainModel.RegionImageUrl
+                };
+
+                return CreatedAtAction(nameof(GetById), new { id = regionDomainModel.id }, regionDTO);
+            }
+            else
             {
-                id = regionDomainModel.id,
-                code = regionDomainModel.code,
-                Name = regionDomainModel.Name,
-                RegionImageUrl = regionDomainModel.RegionImageUrl
-            };
+                return BadRequest();
+            }
             
-            return CreatedAtAction(nameof(GetById), new {id = regionDomainModel.id}, regionDTO);
 
         }
 
@@ -115,32 +123,40 @@ namespace NZWalks.API.Controllers
 
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateRegionDTO updateRegionDTO)
         {
-            // Check if region exists
-
-            var regionDomainModel = new Region
+            if (ModelState.IsValid)
             {
-                code = updateRegionDTO.code,
-                Name = updateRegionDTO.Name,
-                RegionImageUrl = updateRegionDTO.RegionImageUrl
-            };
+                // Check if region exists
 
-            regionDomainModel = await regionRepositary.UpdateAsync(id, regionDomainModel);
+                var regionDomainModel = new Region
+                {
+                    code = updateRegionDTO.code,
+                    Name = updateRegionDTO.Name,
+                    RegionImageUrl = updateRegionDTO.RegionImageUrl
+                };
 
-            if (regionDomainModel == null)
-            {
-                return NotFound();
+                regionDomainModel = await regionRepositary.UpdateAsync(id, regionDomainModel);
+
+                if (regionDomainModel == null)
+                {
+                    return NotFound();
+                }
+
+                // Convert Domain Model to DTO
+                var regionDTO = new RegionDTO
+                {
+                    id = regionDomainModel.id,
+                    code = regionDomainModel.code,
+                    Name = regionDomainModel.Name,
+                    RegionImageUrl = regionDomainModel.RegionImageUrl
+                };
+
+                return Ok(regionDTO);
             }
-
-            // Convert Domain Model to DTO
-            var regionDTO = new RegionDTO
+            else
             {
-                id = regionDomainModel.id,
-                code = regionDomainModel.code,
-                Name = regionDomainModel.Name,
-                RegionImageUrl = regionDomainModel.RegionImageUrl
-            };
-
-            return Ok(regionDTO);
+                return BadRequest();
+            }
+                
         }
 
         // DELETE: Delete Region
