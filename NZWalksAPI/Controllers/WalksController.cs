@@ -8,7 +8,6 @@ namespace NZWalks.API.Controllers
 {
 
     // api/Walks
-
     [Route("api/[controller]")]
     [ApiController]
     public class WalksController : ControllerBase
@@ -76,11 +75,136 @@ namespace NZWalks.API.Controllers
                     LengthInKm = walk.LengthInKm,
                     WalkImageUrl = walk.WalkImageUrl,
                     DifficultyId = walk.DifficultyId,
-                    RegionId = walk.RegionId
+                    RegionId = walk.RegionId,
+                    Region = new RegionDTO()
+                    {
+                        id = walk.Region.id,
+                        code = walk.Region.code,
+                        Name = walk.Region.Name,
+                        RegionImageUrl = walk.Region.RegionImageUrl
+                    },
+                    Difficulty = new DifficultyDTO()
+                    {
+                        Id = walk.Difficulty.Id,
+                        Name = walk.Difficulty.Name
+                    }
                 });
             }
 
             return Ok(walksDTO);
+        }
+
+        // Get a single Walk
+        // Get: api/Walks/{id}
+
+        [HttpGet]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> GetByID([FromRoute] Guid id)
+        {
+            // Get the data from the database to the Domain Model
+            var walksDomainModel = await walkRepositary.GetWalkByIDAsync(id);
+
+            // Map the Domain Model to DTO
+            
+            if (walksDomainModel == null)
+            {
+                return NotFound();
+            }
+
+            var walksDTO = new WalkDTO()
+            {
+                Id = walksDomainModel.Id,
+                Name = walksDomainModel.Name,
+                Description = walksDomainModel.Description,
+                LengthInKm = walksDomainModel.LengthInKm,
+                WalkImageUrl = walksDomainModel.WalkImageUrl,
+                Region = new RegionDTO()
+                {
+                    id = walksDomainModel.Region.id,
+                    code = walksDomainModel.Region.code,
+                    Name = walksDomainModel.Region.Name,
+                    RegionImageUrl = walksDomainModel.Region.RegionImageUrl
+                },
+                Difficulty = new DifficultyDTO()
+                {
+                    Id = walksDomainModel.Difficulty.Id,
+                    Name = walksDomainModel.Difficulty.Name,
+                }
+            };
+
+            return Ok(walksDTO);
+        }
+
+        // Update a single Walk
+        // Put: api/Walk/{id}
+
+        [HttpPut]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> UpdateWalk([FromRoute] Guid id, [FromBody] UpdateWalksDTO updateWalksDTO)
+        {
+            // Map DTO to domain
+
+            var walksDomainModel = new Walk()
+            {
+                Id = id,
+                Name = updateWalksDTO.Name,
+                Description = updateWalksDTO.Description,
+                LengthInKm = updateWalksDTO.LengthInKm,
+                WalkImageUrl = updateWalksDTO.WalkImageUrl,
+                DifficultyId = updateWalksDTO.DifficultyId,
+                RegionId = updateWalksDTO.RegionId
+            };
+
+            // Update the database
+            walksDomainModel = await walkRepositary.UpdateWalkAsync(id, walksDomainModel);
+
+            if (walksDomainModel == null)
+            {
+                return NotFound();
+            }
+
+            // Map from Domain to DTO
+            var walksDTO = new WalkDTO()
+            {
+                Id = walksDomainModel.Id,
+                Name = walksDomainModel.Name,
+                Description = walksDomainModel.Description,
+                LengthInKm = walksDomainModel.LengthInKm,
+                WalkImageUrl = walksDomainModel?.WalkImageUrl,
+                Difficulty = new DifficultyDTO()
+                {
+                    Id = walksDomainModel.Difficulty.Id,
+                    Name = walksDomainModel.Difficulty.Name
+                },
+                Region = new RegionDTO()
+                {
+                    id = walksDomainModel.Region.id,
+                    code = walksDomainModel.Region.code,
+                    Name = walksDomainModel.Region.Name,
+                    RegionImageUrl = walksDomainModel.Region.RegionImageUrl
+                }
+            };
+
+            return Ok(walksDTO);
+        }
+
+        // Delete selected walk
+        // DELETE: api/walk/{id}
+
+        [HttpDelete]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> DeleteWalk([FromRoute] Guid id)
+        {
+            // Delete the data
+
+            var deletedData = await walkRepositary.DeleteWalkAsync(id);
+
+            if (deletedData == null)
+            {
+                return NotFound();
+            }
+
+            return Ok();
         }
     }
 }
