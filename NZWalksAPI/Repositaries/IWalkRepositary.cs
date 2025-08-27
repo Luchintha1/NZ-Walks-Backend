@@ -6,7 +6,8 @@ namespace NZWalks.API.Repositaries
     {
         Task<Walk?> CreateWalk(Walk walk);
 
-        Task<List<Walk>> GetAllWalksAsync();
+        Task<List<Walk>> GetAllWalksAsync(string? filterOn, string? filterQuery, string? sortOn, bool isAscending, 
+            int pageNumber = 1, int pageSize = 1000);
 
         Task<Walk?> GetWalkByIDAsync(Guid id);
 
