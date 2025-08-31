@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NZWalks.API.Models.DTO;
@@ -11,6 +12,7 @@ namespace NZWalks.API.Controllers
     // http://localhost:portNumber/api/Region
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RegionController : ControllerBase
     {
         private readonly NZWalkDbContext dbContext;
